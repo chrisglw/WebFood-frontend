@@ -1,0 +1,119 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background-color: white;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+.left-section {
+    display: flex;
+    align-items: center;
+}
+
+.burger-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.burger-menu-button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.logo h1 {
+    font-size: 28px;
+    color: #c35231;
+    margin: 0;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    margin-left: auto;
+    padding: 0;
+}
+
+.nav-links li {
+    margin: 0 25px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+}
+
+.nav-links a:hover {
+    color: #c35231;
+    border-bottom: 2px solid #c35231;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.cart {
+    margin-left: 40px;
+}
+
+.cart-button {
+    background-color: #c35231;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.cart-button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+/* Media Queries for Responsive Menu */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+
+    .burger-menu-button {
+        display: block;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        background-color: white;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 180px;
+        padding: 10px;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 10px 0;
+    }
+
+    .cart {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .cart-button {
+        font-size: 16px;
+        padding: 10px 15px;
+    }
+}

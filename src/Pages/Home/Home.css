@@ -1,0 +1,75 @@
+/* General Styles */
+.home-container {
+    font-family: Arial, sans-serif;
+}
+
+.hero-image {
+    background-image: url('../../assets/images/restaurant.jpg'); 
+    height: 500px; 
+    background-position: center;
+    background-size: cover;
+    position: relative;
+}
+
+.content-below-hero {
+    text-align: center;
+    margin-top: 40px; 
+    color: #333;
+}
+
+.content-below-hero h2 {
+    font-size: 2.5rem; 
+    margin: 20px 0; 
+}
+
+.menu-button {
+    background-color: #c35231;
+    color: white;
+    border: none;
+    padding: 18px 36px; 
+    font-size: 1.4rem; 
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block;
+    margin-top: 20px; 
+}
+
+.menu-button:hover {
+    background-color: #d46840; 
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .hero-image {
+        height: 400px; 
+    }
+
+    .content-below-hero h2 {
+        font-size: 2rem; 
+    }
+
+    .menu-button {
+        padding: 15px 30px; 
+        font-size: 1.2rem; 
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-image {
+        height: 300px;
+    }
+
+    .content-below-hero {
+        margin-top: 25px;
+    }
+
+    .content-below-hero h2 {
+        font-size: 1.5rem; 
+    }
+
+    .menu-button {
+        padding: 12px 24px; 
+        font-size: 1rem; 
+    }
+}
