@@ -1,4 +1,3 @@
-/* General Styles */
 .home-container {
     font-family: Arial, sans-serif;
 }
@@ -22,27 +21,24 @@
     margin: 20px 0; 
 }
 
-/* Styles for H3 Element */
 .content-below-hero h3 {
-    font-size: 1.2rem; /* Adjust the font size as needed */
-    margin: 15px 0; /* Add some spacing around the element */
-    color: #333; /* General text color */
+    font-size: 1.2rem; 
+    margin: 15px 0; 
+    color: #333; 
 }
 
-/* Styles for Links within H3 */
 .menu-link,
 .grubhub-link {
-    color: #FF4500; /* Apply the specified color */
-    text-decoration: none; /* Remove underline */
-    font-weight: bold; /* Make it bold for emphasis */
+    color: #FF4500;
+    text-decoration: none; 
+    font-weight: bold;
 }
 
 .menu-link:hover,
 .grubhub-link:hover {
-    text-decoration: underline; /* Add underline on hover */
+    text-decoration: underline;
 }
 
-/* Menu Button Styles */
 .menu-button {
     background-color: #c35231;
     color: white;
@@ -71,7 +67,7 @@
     }
 
     .content-below-hero h3 {
-        font-size: 1.1rem; /* Adjust font size for smaller devices */
+        font-size: 1.1rem; 
     }
 
     .menu-button {
@@ -94,7 +90,7 @@
     }
 
     .content-below-hero h3 {
-        font-size: 1rem; /* Adjust font size for even smaller devices */
+        font-size: 1rem;
     }
 
     .menu-button {

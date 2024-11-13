@@ -1,0 +1,28 @@
+.display-container {
+    text-align: center;
+    margin: 20px;
+    max-width: 300px;
+}
+
+.display-container-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.display-container-title {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+.display-container-description {
+    font-size: 1rem;
+    color: #555;
+}
+
+.display-containers-wrapper {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
