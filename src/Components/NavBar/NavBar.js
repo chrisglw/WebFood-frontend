@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './NavBar.css';
 
-const NavBar = () => {
+const NavBar = ({ cartItems }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Placeholder for the cart item count
-    const cartItemCount = 1; // This will be dynamic later
+    // Calculate the cart item count dynamically
+    const cartItemCount = cartItems.length;
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -31,7 +31,7 @@ const NavBar = () => {
             <div className="cart">
                 <Link to="/cart">
                     <button className="cart-button">
-                        Cart({cartItemCount}) {/* Placeholder item count */}
+                        Cart ({cartItemCount})
                     </button>
                 </Link>
             </div>
