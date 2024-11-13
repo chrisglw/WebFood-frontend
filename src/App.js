@@ -16,13 +16,15 @@ function App() {
     <Router>
       <div className="App">
         <NavBar cartItems={cartItems} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/menu" element={<Menu cartItems={cartItems} setCartItems={setCartItems} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems} />} />
-        </Routes>
+        <div className="App-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/menu" element={<Menu cartItems={cartItems} setCartItems={setCartItems} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems} />} />
+          </Routes>
+        </div>
         <Footer />
       </div>
     </Router>
