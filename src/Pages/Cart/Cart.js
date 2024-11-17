@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Cart.css';
 
 function Cart({ cartItems, setCartItems }) {
+    const navigate = useNavigate();
+
     const removeFromCart = (itemToRemove) => {
         const updatedCart = cartItems.filter(item => item.name !== itemToRemove.name);
         setCartItems(updatedCart);
@@ -21,6 +24,11 @@ function Cart({ cartItems, setCartItems }) {
         const tax = parseFloat(calculateTax());
         return (subtotal + tax).toFixed(2);
     };
+
+    const handleContinueToPayment = () => {
+        navigate('/payment');
+    };
+
 
     return (
         <div className="cart-container">
@@ -66,7 +74,13 @@ function Cart({ cartItems, setCartItems }) {
                         <span>${calculateTotal()}</span>
                     </div>
                 </div>
-                <button className="continue-to-payment-button">Continue to payment</button>
+                                <button
+                    className="continue-to-payment-button"
+                    onClick={handleContinueToPayment} // Add onClick event
+                >
+                    Continue to payment
+                </button>
+
             </div>
         </div>
     );

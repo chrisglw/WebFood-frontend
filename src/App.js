@@ -7,6 +7,8 @@ import Menu from './Pages/Menu/Menu';
 import About from './Pages/About/About';
 import Contact from './Pages/Contact/Contact';
 import Cart from './Pages/Cart/Cart';
+import Payment from './Pages/Payment/Payment';
+import LogIn from './Pages/LogIn/LogIn';
 import Footer from './Components/Footer/Footer';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems} />} />
+            <Route path="/payment" element={<Payment />} />
+            <Route path="/login" element={<LogIn />} /> 
           </Routes>
         </div>
         <Footer />
