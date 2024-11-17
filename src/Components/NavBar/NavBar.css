@@ -1,3 +1,4 @@
+/* General Navbar Styles */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -6,6 +7,7 @@
     background-color: white;
     font-family: Arial, sans-serif;
     position: relative;
+    z-index: 1000; 
 }
 
 .left-section {
@@ -78,10 +80,6 @@
 
 /* Media Queries for Responsive Menu */
 @media (max-width: 768px) {
-    .navbar {
-        padding: 15px 20px;
-    }
-
     .burger-menu-button {
         display: block;
     }
@@ -95,8 +93,8 @@
         background-color: white;
         border: 1px solid #ddd;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 180px;
-        padding: 10px;
+        width: 250px;
+        padding: 15px;
     }
 
     .nav-links.open {
@@ -106,14 +104,23 @@
     .nav-links li {
         margin: 10px 0;
     }
+}
 
-    .cart {
-        margin-left: 0;
-        margin-top: 10px;
+@media (max-width: 480px) {
+    .navbar {
+        padding: 10px 15px;
+    }
+
+    .logo h1 {
+        font-size: 24px;
     }
 
     .cart-button {
-        font-size: 16px;
-        padding: 10px 15px;
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .nav-links {
+        width: 200px;
     }
 }
