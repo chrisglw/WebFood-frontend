@@ -1,0 +1,234 @@
+.manage-menu-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.8rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.2rem;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.edit-menu-button,
+.add-category-button,
+.add-item-button,
+.save-menu-button,
+.category-select-button {
+    background-color: #c35231;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+    margin: 10px 5px;
+}
+
+.edit-menu-button:hover,
+.add-category-button:hover,
+.add-item-button:hover,
+.save-menu-button:hover,
+.category-select-button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+.add-category-form,
+.add-item-form {
+    margin-top: 20px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 300px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.category-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.category-selection {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.category-select-button {
+    background-color: #c35231;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
+
+.category-select-button:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
+}
+
+.menu-preview {
+    margin-top: 40px;
+    background-color: #f8f5f1;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-preview h2 {
+    font-size: 1.8em;
+    color: #b85c38;
+    margin-bottom: 20px;
+}
+
+.menu-section {
+    margin-bottom: 20px;
+}
+
+.menu-category {
+    font-size: 1.5em;
+    color: #b85c38;
+    border-bottom: 1px solid #e0dcd5;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu-item {
+    font-size: 1.1em;
+    color: #333;
+    padding: 5px 0;
+    border-bottom: 1px solid #e0dcd5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.delete-button:hover {
+    background-color: #e60000;
+}
+
+/* Responsive Styles */
+@media (max-width: 748px) {
+    .manage-menu-container {
+        padding: 30px;
+        max-width: 700px;
+    }
+
+    h1 {
+        font-size: 2.4rem;
+    }
+
+    input {
+        width: 100%; /* Adjust input width for smaller screens */
+    }
+
+    .edit-menu-button,
+    .add-category-button,
+    .add-item-button,
+    .save-menu-button,
+    .category-select-button {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+
+    .menu-preview {
+        padding: 15px;
+    }
+
+    .menu-preview h2 {
+        font-size: 1.6em;
+    }
+
+    .menu-category {
+        font-size: 1.4em;
+    }
+
+    .menu-item {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .manage-menu-container {
+        padding: 20px;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    input {
+        width: 100%; /* Full width input for mobile screens */
+        font-size: 14px;
+    }
+
+    .edit-menu-button,
+    .add-category-button,
+    .add-item-button,
+    .save-menu-button,
+    .category-select-button {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .menu-preview {
+        padding: 10px;
+    }
+
+    .menu-preview h2 {
+        font-size: 1.4em;
+    }
+
+    .menu-category {
+        font-size: 1.2em;
+    }
+
+    .menu-item {
+        font-size: 0.9em;
+    }
+}

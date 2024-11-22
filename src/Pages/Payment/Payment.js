@@ -2,17 +2,49 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Payment.css';
 
-function Payment() {
+function Payment({ cartItems, setCartItems, orders, setOrders }) {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
 
+    const calculateSubtotal = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    };
+
+    const calculateTax = (subtotal) => {
+        return subtotal * 0.06; // 6% tax
+    };
+
+    const calculateTotal = (subtotal, tax) => {
+        return subtotal + tax;
+    };
+
     const handleProcessOrder = () => {
-        // Simulate sending an email confirmation
+        if (cartItems.length === 0) {
+            alert('Your cart is empty!');
+            return;
+        }
+
+        const subtotal = calculateSubtotal();
+        const tax = calculateTax(subtotal);
+        const total = calculateTotal(subtotal, tax);
+
+        const order = {
+            id: Date.now(), // Unique order ID
+            customerName: `${firstName} ${lastName}`,
+            email,
+            items: [...cartItems],
+            subtotal: subtotal.toFixed(2),
+            tax: tax.toFixed(2),
+            total: total.toFixed(2),
+            status: 'Pending',
+        };
+
+        setOrders([...orders, order]); // Add the order to the orders list
+        setCartItems([]); // Clear the cart
         alert(`Order confirmed! An email will be sent to ${email}.`);
-        // Redirect to the home page
-        navigate('/');
+        navigate('/'); // Redirect to home page
     };
 
     return (
