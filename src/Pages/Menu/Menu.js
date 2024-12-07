@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getMenuCategories } from '../../api/api'; // Import the API function to fetch categories
 import './Menu.css';
 
-function Menu({ cartItems, setCartItems, menuItems }) { // Add menuItems as a prop
+function Menu({ cartItems, setCartItems }) {
+    const [categories, setCategories] = useState([]); 
     const [notification, setNotification] = useState('');
     const [quantities, setQuantities] = useState({});
+
+    // Fetch categories from the backend
+    useEffect(() => {
+        getMenuCategories().then(data => setCategories(data));
+    }, []);
 
     const handleQuantityChange = (itemName, quantity) => {
         setQuantities({ ...quantities, [itemName]: quantity });
@@ -42,17 +49,17 @@ function Menu({ cartItems, setCartItems, menuItems }) { // Add menuItems as a pr
 
             {notification && <div className="notification">{notification}</div>}
 
-            {menuItems.length === 0 ? (
+            {categories.length === 0 ? (
                 <p className="no-items-message">No items in the menu. Please add items from Manage Menu.</p>
             ) : (
-                menuItems.map((section, index) => (
-                    <div key={index} className="menu-section">
-                        <h2 className="menu-category">{section.category}</h2>
+                categories.map(category => (
+                    <div key={category.id} className="menu-section">
+                        <h2 className="menu-category">{category.name}</h2>
                         <ul className="menu-list">
-                            {section.items.map((item, idx) => (
-                                <li key={idx} className="menu-item">
+                            {category.items.map(item => (
+                                <li key={item.id} className="menu-item">
                                     <span className="menu-item-name">
-                                        {item.name} - ${item.price.toFixed(2)}
+                                        {item.name} - ${Number(item.price).toFixed(2)}
                                     </span>
                                     <div className="menu-item-actions">
                                         <input
@@ -60,7 +67,7 @@ function Menu({ cartItems, setCartItems, menuItems }) { // Add menuItems as a pr
                                             min="1"
                                             value={quantities[item.name] || 1}
                                             onChange={(e) =>
-                                                handleQuantityChange(item.name, parseInt(e.target.value))
+                                                handleQuantityChange(item.name, parseInt(e.target.value, 10))
                                             }
                                             className="quantity-input"
                                         />

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createOrder } from '../../api/api';
 import './Payment.css';
 
 function Payment({ cartItems, setCartItems, orders, setOrders }) {
@@ -9,18 +10,18 @@ function Payment({ cartItems, setCartItems, orders, setOrders }) {
     const navigate = useNavigate();
 
     const calculateSubtotal = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+        return cartItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0).toFixed(2);
     };
 
     const calculateTax = (subtotal) => {
-        return subtotal * 0.06; // 6% tax
+        return (subtotal * 0.06).toFixed(2); // 6% tax
     };
 
     const calculateTotal = (subtotal, tax) => {
-        return subtotal + tax;
+        return (parseFloat(subtotal) + parseFloat(tax)).toFixed(2);
     };
 
-    const handleProcessOrder = () => {
+    const handleProcessOrder = async () => {
         if (cartItems.length === 0) {
             alert('Your cart is empty!');
             return;
@@ -30,21 +31,26 @@ function Payment({ cartItems, setCartItems, orders, setOrders }) {
         const tax = calculateTax(subtotal);
         const total = calculateTotal(subtotal, tax);
 
-        const order = {
-            id: Date.now(), // Unique order ID
-            customerName: `${firstName} ${lastName}`,
+        const orderData = {
+            customer_name: `${firstName} ${lastName}`,
             email,
-            items: [...cartItems],
-            subtotal: subtotal.toFixed(2),
-            tax: tax.toFixed(2),
-            total: total.toFixed(2),
+            items: cartItems.map((item) => ({
+                menu_item: item.id, // Use the menu item ID
+                quantity: item.quantity,
+            })),
             status: 'Pending',
         };
 
-        setOrders([...orders, order]); // Add the order to the orders list
-        setCartItems([]); // Clear the cart
-        alert(`Order confirmed! An email will be sent to ${email}.`);
-        navigate('/'); // Redirect to home page
+        try {
+            const newOrder = await createOrder(orderData); // Save the order to the backend
+            setOrders([...orders, newOrder]); // Update local state with the new order
+            setCartItems([]); // Clear the cart
+            alert(`Order confirmed! An email will be sent to ${email}.`);
+            navigate('/'); // Redirect to home page
+        } catch (error) {
+            console.error('Error processing order:', error);
+            alert('Failed to process order. Please try again.');
+        }
     };
 
     return (

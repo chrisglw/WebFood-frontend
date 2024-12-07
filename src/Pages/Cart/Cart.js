@@ -11,7 +11,9 @@ function Cart({ cartItems, setCartItems }) {
     };
 
     const calculateSubtotal = () => {
-        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2);
+        return cartItems
+            .reduce((total, item) => total + Number(item.price) * item.quantity, 0)
+            .toFixed(2);
     };
 
     const calculateTax = () => {
@@ -29,7 +31,6 @@ function Cart({ cartItems, setCartItems }) {
         navigate('/payment');
     };
 
-
     return (
         <div className="cart-container">
             <div className="cart-items-section">
@@ -42,7 +43,7 @@ function Cart({ cartItems, setCartItems }) {
                             <li key={index} className="cart-item">
                                 <div className="cart-item-info">
                                     <span className="cart-item-name">{item.name}</span>
-                                    <span className="cart-item-price">${item.price.toFixed(2)}</span>
+                                    <span className="cart-item-price">${Number(item.price).toFixed(2)}</span>
                                 </div>
                                 <div className="cart-item-quantity">
                                     <span>Quantity: {item.quantity}</span>
@@ -74,13 +75,12 @@ function Cart({ cartItems, setCartItems }) {
                         <span>${calculateTotal()}</span>
                     </div>
                 </div>
-                                <button
+                <button
                     className="continue-to-payment-button"
-                    onClick={handleContinueToPayment} // Add onClick event
+                    onClick={handleContinueToPayment}
                 >
-                    Continue to payment
+                    Continue to Payment
                 </button>
-
             </div>
         </div>
     );

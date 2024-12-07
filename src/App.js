@@ -10,13 +10,13 @@ import Cart from './Pages/Cart/Cart';
 import Payment from './Pages/Payment/Payment';
 import LogIn from './Pages/LogIn/LogIn';
 import ManageMenu from './Pages/ManageMenu/ManageMenu';
-import ManageOrders from './Pages/ManageOrders/ManageOrders'; 
+import ManageOrders from './Pages/ManageOrders/ManageOrders';
 import Footer from './Components/Footer/Footer';
 
 function App() {
     const [cartItems, setCartItems] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
-    const [orders, setOrders] = useState([]); 
+    const [orders, setOrders] = useState([]);
 
     return (
         <Router>
@@ -27,7 +27,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route
                             path="/menu"
-                            element={<Menu cartItems={cartItems} setCartItems={setCartItems} menuItems={menuItems} />}
+                            element={<Menu cartItems={cartItems} setCartItems={setCartItems} />}
                         />
                         <Route path="/about" element={<About />} />
                         <Route path="/contact" element={<Contact />} />

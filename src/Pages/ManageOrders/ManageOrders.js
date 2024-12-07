@@ -1,88 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getOrders, updateOrder } from '../../api/api';
 import './ManageOrders.css';
 
 function ManageOrders({ orders, setOrders }) {
-    const [declineReason, setDeclineReason] = useState({});
-    const [customDeclineReason, setCustomDeclineReason] = useState({});
     const [editingOrderId, setEditingOrderId] = useState(null);
     const [editedOrder, setEditedOrder] = useState(null);
-    const [cancelReason, setCancelReason] = useState({});
 
-    const handleStatusChange = (orderId, newStatus) => {
-        const updatedOrders = orders.map(order =>
-            order.id === orderId ? { ...order, status: newStatus } : order
-        );
-        setOrders(updatedOrders);
-    };
+    // Fetch orders from the backend
+    useEffect(() => {
+        getOrders().then((data) => setOrders(data));
+    }, [setOrders]);
 
-    const handleDecline = (orderId, reason) => {
-        const declineText = reason === 'Other' ? customDeclineReason[orderId] : reason;
-        const updatedOrders = orders.map(order =>
-            order.id === orderId ? { ...order, status: 'Declined', declineReason: declineText } : order
-        );
-        setOrders(updatedOrders);
+    const handleStatusChange = async (orderId, newStatus) => {
+        const orderToUpdate = orders.find(order => order.id === orderId);
+        if (!orderToUpdate) return;
+
+        // Transform items back to { menu_item: <id>, quantity: <number> }
+        const transformedItems = orderToUpdate.items.map(item => ({
+            menu_item: item.id, // 'id' here should be the menu item ID from the enriched data
+            quantity: item.quantity
+        }));
+
+        const updatedOrder = {
+            customer_name: orderToUpdate.customer_name,
+            email: orderToUpdate.email,
+            status: newStatus,
+            items: transformedItems
+        };
+
+        try {
+            await updateOrder(orderId, updatedOrder);
+            setOrders(
+                orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order))
+            );
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
     };
 
     const handleEdit = (orderId) => {
         const orderToEdit = orders.find(order => order.id === orderId);
+        // Clone items for editing
+        const clonedItems = orderToEdit.items.map(item => ({ ...item }));
         setEditingOrderId(orderId);
-        setEditedOrder({ ...orderToEdit, items: [...orderToEdit.items] });
+        setEditedOrder({ ...orderToEdit, items: clonedItems });
     };
 
-    const handleSaveEdit = () => {
+    const handleSaveEdit = async () => {
         if (!editedOrder) return;
 
-        
+        // Calculate updated totals
         const updatedSubtotal = editedOrder.items.reduce(
-            (total, item) => total + item.price * item.quantity,
+            (total, item) => total + Number(item.price) * item.quantity,
             0
         );
         const updatedTax = updatedSubtotal * 0.06; 
         const updatedTotal = updatedSubtotal + updatedTax;
 
+        // Prepare final order with correct structure for the backend
         const finalEditedOrder = {
-            ...editedOrder,
-            subtotal: updatedSubtotal.toFixed(2),
-            tax: updatedTax.toFixed(2),
-            total: updatedTotal.toFixed(2),
+            customer_name: editedOrder.customer_name,
+            email: editedOrder.email,
+            status: editedOrder.status,
+            items: editedOrder.items.map(item => ({
+                menu_item: item.id, // map back to the ID of the menu item
+                quantity: item.quantity
+            }))
         };
 
-        const updatedOrders = orders.map(order =>
-            order.id === editingOrderId ? finalEditedOrder : order
-        );
-
-        setOrders(updatedOrders);
-        setEditingOrderId(null);
-        setEditedOrder(null); 
+        try {
+            await updateOrder(editingOrderId, finalEditedOrder);
+            // Update the local state to reflect the edited order totals
+            const updatedOrders = orders.map(order =>
+                order.id === editingOrderId ? {
+                    ...editedOrder,
+                    subtotal: updatedSubtotal,
+                    tax: updatedTax,
+                    total: updatedTotal
+                } : order
+            );
+            setOrders(updatedOrders);
+            setEditingOrderId(null);
+            setEditedOrder(null);
+        } catch (error) {
+            console.error('Error saving edited order:', error);
+        }
     };
 
-    // Cancel editing
     const handleCancelEdit = () => {
-        setEditingOrderId(null); 
-        setEditedOrder(null); 
+        setEditingOrderId(null);
+        setEditedOrder(null);
     };
 
-    const handleEditChange = (index, field, value) => {
-        setEditedOrder(prev => {
-            const updatedItems = prev.items.map((item, idx) =>
-                idx === index ? { ...item, [field]: value } : item
-            );
-
-            const updatedSubtotal = updatedItems.reduce(
-                (total, item) => total + item.price * item.quantity,
-                0
-            );
-            const updatedTax = updatedSubtotal * 0.06;
-            const updatedTotal = updatedSubtotal + updatedTax;
-
-            return {
-                ...prev,
-                items: updatedItems,
-                subtotal: updatedSubtotal.toFixed(2),
-                tax: updatedTax.toFixed(2),
-                total: updatedTotal.toFixed(2),
-            };
-        });
+    const handleDeleteItem = (itemIndex) => {
+        setEditedOrder(prev => ({
+            ...prev,
+            items: prev.items.filter((_, index) => index !== itemIndex)
+        }));
     };
 
     return (
@@ -91,10 +105,10 @@ function ManageOrders({ orders, setOrders }) {
             {orders.length === 0 ? (
                 <p className="no-items-message">No orders available.</p>
             ) : (
-                [...orders].sort((a, b) => b.id - a.id).map(order => (
+                orders.map(order => (
                     <div key={order.id} className="order-item">
                         <h2>Order #{order.id}</h2>
-                        <p><strong>Customer:</strong> {order.customerName}</p>
+                        <p><strong>Customer:</strong> {order.customer_name}</p>
                         <p><strong>Email:</strong> {order.email}</p>
                         {editingOrderId === order.id ? (
                             <div className="edit-order">
@@ -103,31 +117,55 @@ function ManageOrders({ orders, setOrders }) {
                                         <li key={index}>
                                             <input
                                                 type="text"
-                                                value={item.name}
+                                                value={item.name || ''}
                                                 onChange={(e) =>
-                                                    handleEditChange(index, 'name', e.target.value)
+                                                    setEditedOrder(prev => {
+                                                        const updatedItems = [...prev.items];
+                                                        updatedItems[index].name = e.target.value;
+                                                        return { ...prev, items: updatedItems };
+                                                    })
                                                 }
                                             /> - $
                                             <input
                                                 type="number"
-                                                value={item.price}
+                                                value={item.price || ''}
                                                 onChange={(e) =>
-                                                    handleEditChange(index, 'price', parseFloat(e.target.value) || 0)
+                                                    setEditedOrder(prev => {
+                                                        const updatedItems = [...prev.items];
+                                                        updatedItems[index].price = e.target.value;
+                                                        return { ...prev, items: updatedItems };
+                                                    })
                                                 }
                                             /> x
                                             <input
                                                 type="number"
-                                                value={item.quantity}
+                                                value={item.quantity || ''}
                                                 onChange={(e) =>
-                                                    handleEditChange(index, 'quantity', parseInt(e.target.value) || 1)
+                                                    setEditedOrder(prev => {
+                                                        const updatedItems = [...prev.items];
+                                                        updatedItems[index].quantity = Number(e.target.value);
+                                                        return { ...prev, items: updatedItems };
+                                                    })
                                                 }
                                             />
+                                            <button
+                                                onClick={() => handleDeleteItem(index)}
+                                                className="delete-item-button"
+                                            >
+                                                Delete
+                                            </button>
                                         </li>
                                     ))}
                                 </ul>
-                                <p><strong>Subtotal:</strong> ${editedOrder.subtotal}</p>
-                                <p><strong>Tax:</strong> ${editedOrder.tax}</p>
-                                <p><strong>Total:</strong> ${editedOrder.total}</p>
+                                <p><strong>Subtotal:</strong> $
+                                    {editedOrder.items.reduce((total, item) => total + Number(item.price) * item.quantity, 0).toFixed(2)}
+                                </p>
+                                <p><strong>Tax:</strong> $
+                                    {(editedOrder.items.reduce((total, item) => total + Number(item.price) * item.quantity, 0) * 0.06).toFixed(2)}
+                                </p>
+                                <p><strong>Total:</strong> $
+                                    {(editedOrder.items.reduce((total, item) => total + Number(item.price) * item.quantity, 0) * 1.06).toFixed(2)}
+                                </p>
                                 <button onClick={handleSaveEdit}>Save</button>
                                 <button onClick={handleCancelEdit}>Cancel</button>
                             </div>
@@ -135,95 +173,26 @@ function ManageOrders({ orders, setOrders }) {
                             <ul>
                                 {order.items.map((item, index) => (
                                     <li key={index}>
-                                        {item.quantity} x {item.name} (${item.price.toFixed(2)})
+                                        {item.quantity} x {item.name || 'Unknown'} (${Number(item.price).toFixed(2)})
                                     </li>
                                 ))}
                             </ul>
                         )}
-                        <p><strong>Subtotal:</strong> ${order.subtotal}</p>
-                        <p><strong>Tax:</strong> ${order.tax}</p>
-                        <p><strong>Total:</strong> ${order.total}</p>
                         <p><strong>Status:</strong> {order.status}</p>
-
-                        {order.status === 'Pending' && (
-                            <div className="order-actions">
-                                <button onClick={() => handleStatusChange(order.id, 'Accepted')}>
-                                    Accept
-                                </button>
-                                <button onClick={() => handleEdit(order.id)}>Edit</button>
-                                <button
-                                    onClick={() =>
-                                        setDeclineReason({ ...declineReason, [order.id]: true })
-                                    }
-                                >
-                                    Decline
-                                </button>
-                                {declineReason[order.id] && (
-                                    <>
-                                        <select
-                                            onChange={(e) =>
-                                                setDeclineReason({ ...declineReason, [order.id]: e.target.value })
-                                            }
-                                        >
-                                            <option value="" disabled>Select Reason</option>
-                                            <option value="Out of stock">Out of stock</option>
-                                            <option value="Incorrect order">Incorrect order</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        {declineReason[order.id] === 'Other' && (
-                                            <textarea
-                                                placeholder="Enter custom reason..."
-                                                onChange={(e) =>
-                                                    setCustomDeclineReason({ ...customDeclineReason, [order.id]: e.target.value })
-                                                }
-                                            />
-                                        )}
-                                        <button onClick={() => handleDecline(order.id, declineReason[order.id])}>
-                                            Confirm Decline
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        )}
-                        {order.status === 'Accepted' && (
-                            <div className="order-actions">
+                        <div className="order-actions">
+                            {order.status === 'Pending' && (
+                                <>
+                                    <button onClick={() => handleStatusChange(order.id, 'Accepted')}>Accept</button>
+                                    <button onClick={() => handleEdit(order.id)}>Edit</button>
+                                    <button onClick={() => handleStatusChange(order.id, 'Declined')}>Decline</button>
+                                </>
+                            )}
+                            {order.status === 'Accepted' && (
                                 <button onClick={() => handleStatusChange(order.id, 'Ready for Pick Up')}>
                                     Ready for Pick Up
                                 </button>
-                                <button
-                                    onClick={() =>
-                                        setCancelReason({ ...cancelReason, [order.id]: true })
-                                    }
-                                >
-                                    Cancel Order
-                                </button>
-                                {cancelReason[order.id] && (
-                                    <>
-                                        <select
-                                            onChange={(e) =>
-                                                setCancelReason({ ...cancelReason, [order.id]: e.target.value })
-                                            }
-                                        >
-                                            <option value="" disabled>Select Reason</option>
-                                            <option value="Customer requested cancellation">Customer requested cancellation</option>
-                                            <option value="Restaurant issue">Restaurant issue</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        {cancelReason[order.id] === 'Other' && (
-                                            <textarea
-                                                placeholder="Enter custom reason..."
-                                                onChange={(e) =>
-                                                    setCustomDeclineReason({ ...customDeclineReason, [order.id]: e.target.value })
-                                                }
-                                            />
-                                        )}
-                                        <button onClick={() => handleDecline(order.id, cancelReason[order.id])}>
-                                            Confirm Cancellation
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 ))
             )}
