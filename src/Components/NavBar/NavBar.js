@@ -4,7 +4,7 @@ import './NavBar.css';
 
 const NavBar = ({ cartItems }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [userRole] = useState("manager"); // Change to "manager" or "employee" to test
+    const [userRole] = useState("manager"); // Change to "manager" or "staff" to test
     const menuRef = useRef(null); // Reference to the menu element
 
     // Calculate the cart item count dynamically
@@ -58,7 +58,7 @@ const NavBar = ({ cartItems }) => {
                 )}
 
                 {/* Conditional Link for Employees */}
-                {userRole === "employee" && (
+                {userRole === "staff" && (
                     <li><Link to="/manage-orders" onClick={closeMenu}>Manage Orders</Link></li>
                 )}
             </ul>
