@@ -5,19 +5,22 @@ import './ManageOrders.css';
 function ManageOrders({ orders, setOrders }) {
     const [editingOrderId, setEditingOrderId] = useState(null);
     const [editedOrder, setEditedOrder] = useState(null);
+    const [filterStatus, setFilterStatus] = useState('realtime');
 
-    // Fetch orders from the backend
     useEffect(() => {
-        getOrders().then((data) => setOrders(data));
+        getOrders().then((data) => {
+            // Sort orders by created_at descending (newest first) for "real-time" default
+            const sorted = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            setOrders(sorted);
+        });
     }, [setOrders]);
 
     const handleStatusChange = async (orderId, newStatus) => {
         const orderToUpdate = orders.find(order => order.id === orderId);
         if (!orderToUpdate) return;
 
-        // Transform items back to { menu_item: <id>, quantity: <number> }
         const transformedItems = orderToUpdate.items.map(item => ({
-            menu_item: item.id, // 'id' here should be the menu item ID from the enriched data
+            menu_item: item.id,
             quantity: item.quantity
         }));
 
@@ -31,7 +34,9 @@ function ManageOrders({ orders, setOrders }) {
         try {
             await updateOrder(orderId, updatedOrder);
             setOrders(
-                orders.map(order => (order.id === orderId ? { ...order, status: newStatus } : order))
+                orders.map(order => 
+                    (order.id === orderId ? { ...order, status: newStatus } : order)
+                )
             );
         } catch (error) {
             console.error('Error updating status:', error);
@@ -40,7 +45,6 @@ function ManageOrders({ orders, setOrders }) {
 
     const handleEdit = (orderId) => {
         const orderToEdit = orders.find(order => order.id === orderId);
-        // Clone items for editing
         const clonedItems = orderToEdit.items.map(item => ({ ...item }));
         setEditingOrderId(orderId);
         setEditedOrder({ ...orderToEdit, items: clonedItems });
@@ -49,7 +53,6 @@ function ManageOrders({ orders, setOrders }) {
     const handleSaveEdit = async () => {
         if (!editedOrder) return;
 
-        // Calculate updated totals
         const updatedSubtotal = editedOrder.items.reduce(
             (total, item) => total + Number(item.price) * item.quantity,
             0
@@ -57,20 +60,18 @@ function ManageOrders({ orders, setOrders }) {
         const updatedTax = updatedSubtotal * 0.06; 
         const updatedTotal = updatedSubtotal + updatedTax;
 
-        // Prepare final order with correct structure for the backend
         const finalEditedOrder = {
             customer_name: editedOrder.customer_name,
             email: editedOrder.email,
             status: editedOrder.status,
             items: editedOrder.items.map(item => ({
-                menu_item: item.id, // map back to the ID of the menu item
+                menu_item: item.id,
                 quantity: item.quantity
             }))
         };
 
         try {
             await updateOrder(editingOrderId, finalEditedOrder);
-            // Update the local state to reflect the edited order totals
             const updatedOrders = orders.map(order =>
                 order.id === editingOrderId ? {
                     ...editedOrder,
@@ -99,13 +100,40 @@ function ManageOrders({ orders, setOrders }) {
         }));
     };
 
+    // Filter and/or sort orders based on filterStatus
+    let displayedOrders = [...orders];
+
+    if (filterStatus !== 'realtime') {
+        // Filter by chosen status
+        displayedOrders = displayedOrders.filter(order => order.status === filterStatus);
+    } else {
+        // In realtime mode, sort by created_at newest first
+        displayedOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
     return (
         <div className="menu-container">
             <h1 className="menu-title">Manage Orders</h1>
-            {orders.length === 0 ? (
+
+            <div className="filter-section">
+                <label htmlFor="statusFilter">Filter by Status:</label>
+                <select
+                    id="statusFilter"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                    <option value="realtime">Real Time</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Ready for Pick Up">Ready for Pick Up</option>
+                    <option value="Declined">Declined</option>
+                </select>
+            </div>
+
+            {displayedOrders.length === 0 ? (
                 <p className="no-items-message">No orders available.</p>
             ) : (
-                orders.map(order => (
+                displayedOrders.map(order => (
                     <div key={order.id} className="order-item">
                         <h2>Order #{order.id}</h2>
                         <p><strong>Customer:</strong> {order.customer_name}</p>
@@ -158,7 +186,9 @@ function ManageOrders({ orders, setOrders }) {
                                     ))}
                                 </ul>
                                 <p><strong>Subtotal:</strong> $
-                                    {editedOrder.items.reduce((total, item) => total + Number(item.price) * item.quantity, 0).toFixed(2)}
+                                    {editedOrder.items
+                                        .reduce((total, item) => total + Number(item.price) * item.quantity, 0)
+                                        .toFixed(2)}
                                 </p>
                                 <p><strong>Tax:</strong> $
                                     {(editedOrder.items.reduce((total, item) => total + Number(item.price) * item.quantity, 0) * 0.06).toFixed(2)}

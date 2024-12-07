@@ -79,6 +79,25 @@
     font-size: 1em;
 }
 
+.filter-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.filter-section label {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.filter-section select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+
 /* Responsive Styles for screens 748px and below */
 @media (max-width: 748px) {
     .menu-container {
