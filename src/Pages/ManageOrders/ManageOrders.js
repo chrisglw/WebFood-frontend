@@ -9,13 +9,28 @@ function ManageOrders({ orders, setOrders }) {
 
     useEffect(() => {
         getOrders().then((data) => {
-            // Sort orders by created_at descending (newest first) for "real-time" default
+            // Sort by newest first for 'realtime' default
             const sorted = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setOrders(sorted);
         });
     }, [setOrders]);
 
+    // Map user-facing statuses to backend values
+    const statusMapping = {
+        'Pending': 'Pending',
+        'Accepted': 'Accepted',
+        'Declined': 'Declined',
+        'Ready for Pick Up': 'ReadyForPickUp', // Backend value must match model's choice
+        'Completed': 'Completed'
+    };
+
     const handleStatusChange = async (orderId, newStatus) => {
+        const backendStatus = statusMapping[newStatus];
+        if (!backendStatus) {
+            console.error('Invalid status:', newStatus);
+            return;
+        }
+
         const orderToUpdate = orders.find(order => order.id === orderId);
         if (!orderToUpdate) return;
 
@@ -27,14 +42,14 @@ function ManageOrders({ orders, setOrders }) {
         const updatedOrder = {
             customer_name: orderToUpdate.customer_name,
             email: orderToUpdate.email,
-            status: newStatus,
+            status: backendStatus, // Use backend-friendly status
             items: transformedItems
         };
 
         try {
             await updateOrder(orderId, updatedOrder);
             setOrders(
-                orders.map(order => 
+                orders.map(order =>
                     (order.id === orderId ? { ...order, status: newStatus } : order)
                 )
             );
@@ -57,13 +72,16 @@ function ManageOrders({ orders, setOrders }) {
             (total, item) => total + Number(item.price) * item.quantity,
             0
         );
-        const updatedTax = updatedSubtotal * 0.06; 
+        const updatedTax = updatedSubtotal * 0.06;
         const updatedTotal = updatedSubtotal + updatedTax;
+
+        // Convert the edited order status to its backend value
+        const backendStatus = statusMapping[editedOrder.status] || editedOrder.status;
 
         const finalEditedOrder = {
             customer_name: editedOrder.customer_name,
             email: editedOrder.email,
-            status: editedOrder.status,
+            status: backendStatus,
             items: editedOrder.items.map(item => ({
                 menu_item: item.id,
                 quantity: item.quantity
@@ -73,12 +91,9 @@ function ManageOrders({ orders, setOrders }) {
         try {
             await updateOrder(editingOrderId, finalEditedOrder);
             const updatedOrders = orders.map(order =>
-                order.id === editingOrderId ? {
-                    ...editedOrder,
-                    subtotal: updatedSubtotal,
-                    tax: updatedTax,
-                    total: updatedTotal
-                } : order
+                order.id === editingOrderId
+                    ? { ...editedOrder, subtotal: updatedSubtotal, tax: updatedTax, total: updatedTotal }
+                    : order
             );
             setOrders(updatedOrders);
             setEditingOrderId(null);
@@ -100,14 +115,11 @@ function ManageOrders({ orders, setOrders }) {
         }));
     };
 
-    // Filter and/or sort orders based on filterStatus
     let displayedOrders = [...orders];
 
     if (filterStatus !== 'realtime') {
-        // Filter by chosen status
         displayedOrders = displayedOrders.filter(order => order.status === filterStatus);
     } else {
-        // In realtime mode, sort by created_at newest first
         displayedOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
 
@@ -127,6 +139,7 @@ function ManageOrders({ orders, setOrders }) {
                     <option value="Accepted">Accepted</option>
                     <option value="Ready for Pick Up">Ready for Pick Up</option>
                     <option value="Declined">Declined</option>
+                    <option value="Completed">Completed</option>
                 </select>
             </div>
 
@@ -138,6 +151,7 @@ function ManageOrders({ orders, setOrders }) {
                         <h2>Order #{order.id}</h2>
                         <p><strong>Customer:</strong> {order.customer_name}</p>
                         <p><strong>Email:</strong> {order.email}</p>
+
                         {editingOrderId === order.id ? (
                             <div className="edit-order">
                                 <ul>
@@ -208,6 +222,7 @@ function ManageOrders({ orders, setOrders }) {
                                 ))}
                             </ul>
                         )}
+
                         <p><strong>Status:</strong> {order.status}</p>
                         <div className="order-actions">
                             {order.status === 'Pending' && (
@@ -220,6 +235,11 @@ function ManageOrders({ orders, setOrders }) {
                             {order.status === 'Accepted' && (
                                 <button onClick={() => handleStatusChange(order.id, 'Ready for Pick Up')}>
                                     Ready for Pick Up
+                                </button>
+                            )}
+                            {order.status === 'Ready for Pick Up' && (
+                                <button onClick={() => handleStatusChange(order.id, 'Completed')}>
+                                    Complete
                                 </button>
                             )}
                         </div>
