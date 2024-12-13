@@ -54,28 +54,33 @@ function Menu({ cartItems, setCartItems }) {
                     <div key={category.id} className="menu-section">
                         <h2 className="menu-category">{category.name}</h2>
                         <ul className="menu-list">
-                            {category.items.map(item => (
-                                <li key={item.id} className="menu-item">
-                                    <span className="menu-item-name">
-                                        {item.name} - ${Number(item.price).toFixed(2)}
-                                    </span>
-                                    <p className="menu-item-description">{item.description}</p> {/* Show description */}
-                                    <div className="menu-item-actions">
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            value={quantities[item.name] || 1}
-                                            onChange={(e) =>
-                                                handleQuantityChange(item.name, parseInt(e.target.value, 10))
-                                            }
-                                            className="quantity-input"
-                                        />
-                                        <button className="add-to-cart-button" onClick={() => addToCart(item)}>
-                                            Add to Cart
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
+                            {category.items
+                                .filter(item => item.is_available) // Filter for available items
+                                .map(item => (
+                                    <li key={item.id} className="menu-item">
+                                        <span className="menu-item-name">
+                                            {item.name} - ${Number(item.price).toFixed(2)}
+                                        </span>
+                                        <p className="menu-item-description">{item.description}</p>
+                                        <div className="menu-item-actions">
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={quantities[item.name] || 1}
+                                                onChange={(e) =>
+                                                    handleQuantityChange(item.name, parseInt(e.target.value, 10))
+                                                }
+                                                className="quantity-input"
+                                            />
+                                            <button
+                                                className="add-to-cart-button"
+                                                onClick={() => addToCart(item)}
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </li>
+                                ))}
                         </ul>
                     </div>
                 ))

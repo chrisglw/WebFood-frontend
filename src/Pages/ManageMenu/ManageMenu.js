@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getMenuCategories, createCategory, deleteCategory, createMenuItem, deleteMenuItem } from '../../api/api';
+import { getMenuCategories, createCategory, deleteCategory, createMenuItem, deleteMenuItem, updateMenuItem } from '../../api/api';
 import './ManageMenu.css';
 
 function ManageMenu() {
@@ -34,7 +34,7 @@ function ManageMenu() {
             const newMenuItem = await createMenuItem({
                 name: newItem.name,
                 price: parseFloat(newItem.price),
-                description: newItem.description, // Include description
+                description: newItem.description,
                 category: categoryId,
             });
 
@@ -61,6 +61,20 @@ function ManageMenu() {
         }
     };
 
+    const handleToggleAvailability = async (categoryId, itemId, isAvailable) => {
+        const updatedItem = await updateMenuItem(itemId, { is_available: !isAvailable });
+        setCategories(categories.map(category =>
+            category.id === categoryId
+                ? {
+                    ...category,
+                    items: category.items.map(item =>
+                        item.id === itemId ? { ...item, is_available: !isAvailable } : item
+                    ),
+                }
+                : category
+        ));
+    };
+
     return (
         <div className="manage-menu-container">
             <h1>Manage Menu</h1>
@@ -74,29 +88,27 @@ function ManageMenu() {
                 ) : (
                     categories.map(category => (
                         <div key={category.id} className="menu-section">
-                            <h3 className="menu-category">
-                                {category.name}
-                                {isEditing && (
-                                    <button
-                                        className="delete-button"
-                                        onClick={() => handleDeleteCategory(category.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                )}
-                            </h3>
+                            <h3 className="menu-category">{category.name}</h3>
                             <ul className="menu-list">
                                 {category.items?.map(item => (
                                     <li key={item.id} className="menu-item">
                                         {item.name} - ${Number(item.price).toFixed(2)}
-                                        <p>{item.description}</p> {/* Display description */}
+                                        <p>{item.description}</p>
                                         {isEditing && (
-                                            <button
-                                                className="delete-button"
-                                                onClick={() => handleDeleteItem(category.id, item.id)}
-                                            >
-                                                Delete
-                                            </button>
+                                            <div className="item-actions">
+                                                <button
+                                                    className="toggle-button"
+                                                    onClick={() => handleToggleAvailability(category.id, item.id, item.is_available)}
+                                                >
+                                                    {item.is_available ? 'Not Available' : 'Available'}
+                                                </button>
+                                                <button
+                                                    className="delete-button"
+                                                    onClick={() => handleDeleteItem(category.id, item.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
                                         )}
                                     </li>
                                 ))}
@@ -131,7 +143,7 @@ function ManageMenu() {
                                 value={newItem.price}
                                 onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
                             />
-                            <input
+                            <textarea
                                 placeholder="Description"
                                 value={newItem.description}
                                 onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}

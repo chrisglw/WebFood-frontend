@@ -35,7 +35,7 @@ export const createMenuItem = async (menuItemData) => {
 };
 
 export const updateMenuItem = async (menuItemId, menuItemData) => {
-    const response = await axios.put(`${API_BASE_URL}items/${menuItemId}/`, menuItemData);
+    const response = await axios.patch(`${API_BASE_URL}items/${menuItemId}/`, menuItemData);
     return response.data;
 };
 

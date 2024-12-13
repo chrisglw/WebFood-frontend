@@ -151,6 +151,23 @@ input {
     background-color: #e60000;
 }
 
+.toggle-button {
+    background-color: #ffa500;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+    background-color: #cc8400;
+}
+
+
 /* Responsive Styles */
 @media (max-width: 748px) {
     .manage-menu-container {
