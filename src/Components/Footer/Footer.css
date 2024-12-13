@@ -5,10 +5,16 @@
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-color: #c35231; 
-    color: #fff; 
+    background-color: #c35231;
+    color: #fff;
     font-family: Arial, sans-serif;
 }
+
+.footer p,
+.footer a {
+    color: #fff;
+}
+
 
 .footer-section {
     margin: 10px 0;
@@ -17,13 +23,13 @@
 
 /* Styling for links */
 .footer-link {
-    color: #fff; 
+    color: #fff;
     text-decoration: none;
     margin: 0 10px;
 }
 
 .footer-link:hover {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
 
 /* Social Media Styling */
@@ -34,9 +40,9 @@
 }
 
 .social-icon {
-    width: 30px; 
+    width: 30px;
     height: 30px;
-    margin: 0 10px; 
+    margin: 0 10px;
     transition: transform 0.3s ease;
 }
 
@@ -47,7 +53,7 @@
 /* Responsive Design for Smaller Devices */
 @media (max-width: 768px) {
     .footer {
-        flex-direction: column; 
+        flex-direction: column;
     }
 
     .footer-section {
@@ -62,11 +68,11 @@
 
 @media (max-width: 480px) {
     .footer {
-        padding: 10px; 
+        padding: 10px;
     }
 
     .social-icon {
-        width: 24px; 
+        width: 24px;
         height: 24px;
     }
 }

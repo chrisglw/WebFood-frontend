@@ -95,7 +95,7 @@ function ManageMenu() {
         <div className="manage-menu-container">
             <h1>Manage Menu</h1>
             <button className="edit-menu-button" onClick={() => setIsEditing(!isEditing)}>
-                {isEditing ? 'Cancel Edit' : 'Edit Menu'}
+                {isEditing ? 'Done Editing' : 'Edit Menu'}
             </button>
 
             <div className="menu-preview">

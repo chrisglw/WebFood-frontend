@@ -47,7 +47,7 @@ const NavBar = ({ cartItems }) => {
             <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
                 <li><Link to="/" onClick={closeMenu}>Home</Link></li>
                 <li><Link to="/menu" onClick={closeMenu}>Menu</Link></li>
-                <li><Link to="/about" onClick={closeMenu}>About Us</Link></li>
+                {/* <li><Link to="/about" onClick={closeMenu}>About Us</Link></li> */}
 
                 {/* Conditional Links for Managers */}
                 {userRole === "manager" && (
