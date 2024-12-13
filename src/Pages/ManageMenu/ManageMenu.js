@@ -75,6 +75,22 @@ function ManageMenu() {
         ));
     };
 
+    const handleUpdateItem = async (categoryId, itemId, field, value) => {
+        const updatedItemData = { [field]: value };
+        const updatedItem = await updateMenuItem(itemId, updatedItemData);
+
+        setCategories(categories.map(category =>
+            category.id === categoryId
+                ? {
+                    ...category,
+                    items: category.items.map(item =>
+                        item.id === itemId ? { ...item, ...updatedItem } : item
+                    ),
+                }
+                : category
+        ));
+    };
+
     return (
         <div className="manage-menu-container">
             <h1>Manage Menu</h1>
@@ -92,23 +108,45 @@ function ManageMenu() {
                             <ul className="menu-list">
                                 {category.items?.map(item => (
                                     <li key={item.id} className="menu-item">
-                                        {item.name} - ${Number(item.price).toFixed(2)}
-                                        <p>{item.description}</p>
-                                        {isEditing && (
-                                            <div className="item-actions">
-                                                <button
-                                                    className="toggle-button"
-                                                    onClick={() => handleToggleAvailability(category.id, item.id, item.is_available)}
-                                                >
-                                                    {item.is_available ? 'Not Available' : 'Available'}
-                                                </button>
-                                                <button
-                                                    className="delete-button"
-                                                    onClick={() => handleDeleteItem(category.id, item.id)}
-                                                >
-                                                    Delete
-                                                </button>
+                                        {isEditing ? (
+                                            <div className="edit-item-form">
+                                                <input
+                                                    type="text"
+                                                    defaultValue={item.name}
+                                                    onBlur={(e) => handleUpdateItem(category.id, item.id, 'name', e.target.value)}
+                                                    placeholder="Name"
+                                                />
+                                                <input
+                                                    type="number"
+                                                    defaultValue={item.price}
+                                                    onBlur={(e) => handleUpdateItem(category.id, item.id, 'price', parseFloat(e.target.value))}
+                                                    placeholder="Price"
+                                                />
+                                                <input
+                                                    defaultValue={item.description}
+                                                    onBlur={(e) => handleUpdateItem(category.id, item.id, 'description', e.target.value)}
+                                                    placeholder="Description"
+                                                />
+                                                <div className="item-actions">
+                                                    <button
+                                                        className="toggle-button"
+                                                        onClick={() => handleToggleAvailability(category.id, item.id, item.is_available)}
+                                                    >
+                                                        {item.is_available ? 'Not Available' : 'Available'}
+                                                    </button>
+                                                    <button
+                                                        className="delete-button"
+                                                        onClick={() => handleDeleteItem(category.id, item.id)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
+                                        ) : (
+                                            <>
+                                                {item.name} - ${Number(item.price).toFixed(2)}
+                                                <p>{item.description}</p>
+                                            </>
                                         )}
                                     </li>
                                 ))}
