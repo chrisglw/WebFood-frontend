@@ -2,17 +2,47 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LogIn.css';
 
-function LogIn() {
+function LogIn({ setUserRole }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (username && password) {
-            navigate('/menustaff');
-        } else {
+
+        if (!username || !password) {
             alert('Please enter both username and password.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8000/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (!response.ok) {
+                alert('Login failed. Please check your credentials.');
+                return;
+            }
+
+            const data = await response.json();
+            // Store token and role in localStorage
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('role', data.role);
+            localStorage.setItem('username', data.username);
+
+            // Update the user role in state
+            setUserRole(data.role);
+
+            // Redirect the user based on their role or to home
+            navigate('/');
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Something went wrong. Please try again.');
         }
     };
 

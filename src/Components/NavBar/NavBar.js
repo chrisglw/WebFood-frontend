@@ -2,12 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './NavBar.css';
 
-const NavBar = ({ cartItems }) => {
+const NavBar = ({ cartItems, userRole, setUserRole }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [userRole] = useState("manager"); // Change to "manager" or "staff" to test
-    const menuRef = useRef(null); // Reference to the menu element
+    const menuRef = useRef(null);
 
-    // Calculate the cart item count dynamically
     const cartItemCount = cartItems.length;
 
     const toggleMenu = () => {
@@ -18,21 +16,28 @@ const NavBar = ({ cartItems }) => {
         setIsMenuOpen(false);
     };
 
-    // Close the menu when clicking outside
+    // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
                 setIsMenuOpen(false);
             }
         };
-        // Add event listener
         document.addEventListener("mousedown", handleClickOutside);
 
-        // Clean up event listener on unmount
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    // Handle logout functionality
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('username');
+        setUserRole(null); // Reset the user role in state
+        alert('You have been logged out.');
+    };
 
     return (
         <nav className="navbar">
@@ -47,7 +52,6 @@ const NavBar = ({ cartItems }) => {
             <ul className={`nav-links ${isMenuOpen ? 'open' : ''}`} ref={menuRef}>
                 <li><Link to="/" onClick={closeMenu}>Home</Link></li>
                 <li><Link to="/menu" onClick={closeMenu}>Menu</Link></li>
-                {/* <li><Link to="/about" onClick={closeMenu}>About Us</Link></li> */}
 
                 {/* Conditional Links for Managers */}
                 {userRole === "manager" && (
@@ -60,6 +64,16 @@ const NavBar = ({ cartItems }) => {
                 {/* Conditional Link for Employees */}
                 {userRole === "staff" && (
                     <li><Link to="/manage-orders" onClick={closeMenu}>Manage Orders</Link></li>
+                )}
+
+                {/* Show login option if not logged in */}
+                {!userRole && (
+                    <li><Link to="/login" onClick={closeMenu}>Login</Link></li>
+                )}
+
+                {/* Show logout option if logged in */}
+                {userRole && (
+                    <li><button onClick={handleLogout} className="logout-button">Logout</button></li>
                 )}
             </ul>
             <div className="cart">

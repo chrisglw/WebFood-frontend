@@ -1,4 +1,3 @@
-import './App.css';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './Components/NavBar/NavBar';
@@ -12,16 +11,19 @@ import LogIn from './Pages/LogIn/LogIn';
 import ManageMenu from './Pages/ManageMenu/ManageMenu';
 import ManageOrders from './Pages/ManageOrders/ManageOrders';
 import Footer from './Components/Footer/Footer';
+import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
 
 function App() {
     const [cartItems, setCartItems] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [userRole, setUserRole] = useState(localStorage.getItem('role')); // Initialize from localStorage
 
     return (
         <Router>
             <div className="App">
-                <NavBar cartItems={cartItems} />
+                {/* Pass userRole and setUserRole to NavBar */}
+                <NavBar cartItems={cartItems} userRole={userRole} setUserRole={setUserRole} />
                 <div className="App-content">
                     <Routes>
                         <Route path="/" element={<Home />} />
@@ -39,14 +41,27 @@ function App() {
                             path="/payment"
                             element={<Payment cartItems={cartItems} setCartItems={setCartItems} orders={orders} setOrders={setOrders} />}
                         />
-                        <Route path="/login" element={<LogIn />} />
+                        <Route
+                            path="/login"
+                            element={<LogIn setUserRole={setUserRole} />} // Pass setUserRole to LogIn
+                        />
+
+                        {/* Protected routes */}
                         <Route
                             path="/manage-menu"
-                            element={<ManageMenu menuItems={menuItems} setMenuItems={setMenuItems} />}
+                            element={
+                                <ProtectedRoute requiredRole="manager">
+                                    <ManageMenu menuItems={menuItems} setMenuItems={setMenuItems} />
+                                </ProtectedRoute>
+                            }
                         />
                         <Route
                             path="/manage-orders"
-                            element={<ManageOrders orders={orders} setOrders={setOrders} />}
+                            element={
+                                <ProtectedRoute requiredRole="staff">
+                                    <ManageOrders orders={orders} setOrders={setOrders} />
+                                </ProtectedRoute>
+                            }
                         />
                     </Routes>
                 </div>
