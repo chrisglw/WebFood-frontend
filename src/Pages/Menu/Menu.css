@@ -55,6 +55,13 @@
     flex: 1;
 }
 
+.menu-item-description {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
 .menu-item-actions {
     display: flex;
     align-items: center;

@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getMenuCategories } from '../../api/api'; // Import the API function to fetch categories
+import { getMenuCategories } from '../../api/api';
 import './Menu.css';
 
 function Menu({ cartItems, setCartItems }) {
-    const [categories, setCategories] = useState([]); 
+    const [categories, setCategories] = useState([]);
     const [notification, setNotification] = useState('');
     const [quantities, setQuantities] = useState({});
 
-    // Fetch categories from the backend
     useEffect(() => {
         getMenuCategories().then(data => setCategories(data));
     }, []);
@@ -28,7 +27,6 @@ function Menu({ cartItems, setCartItems }) {
             );
             setCartItems(updatedCart);
         } else {
-            // Add new item to the cart
             setCartItems([...cartItems, { ...item, quantity }]);
         }
 
@@ -61,6 +59,7 @@ function Menu({ cartItems, setCartItems }) {
                                     <span className="menu-item-name">
                                         {item.name} - ${Number(item.price).toFixed(2)}
                                     </span>
+                                    <p className="menu-item-description">{item.description}</p> {/* Show description */}
                                     <div className="menu-item-actions">
                                         <input
                                             type="number"

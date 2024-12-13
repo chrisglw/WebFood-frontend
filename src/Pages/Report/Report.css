@@ -1,0 +1,37 @@
+.sales-report {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.report-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+}
+
+.summary-item {
+    text-align: center;
+    font-size: 1.2em;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.summary-item h2 {
+    margin-bottom: 10px;
+}
+
+.report-trends {
+    margin-top: 20px;
+}
+
+.chart-container {
+    height: 400px;
+    position: relative;
+}

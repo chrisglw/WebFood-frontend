@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { getMenuCategories, createCategory, deleteCategory, createMenuItem, deleteMenuItem } from '../../api/api'; // Import API functions
+import { getMenuCategories, createCategory, deleteCategory, createMenuItem, deleteMenuItem } from '../../api/api';
 import './ManageMenu.css';
 
 function ManageMenu() {
-    const [categories, setCategories] = useState([]); 
+    const [categories, setCategories] = useState([]);
     const [currentCategory, setCurrentCategory] = useState('');
-    const [newItem, setNewItem] = useState({ name: '', price: '' });
+    const [newItem, setNewItem] = useState({ name: '', price: '', description: '' });
     const [isEditing, setIsEditing] = useState(false);
-    const [activeForm, setActiveForm] = useState(''); 
+    const [activeForm, setActiveForm] = useState('');
 
-    // Fetch categories from the backend
     useEffect(() => {
         getMenuCategories().then(data => setCategories(data));
     }, []);
@@ -35,17 +34,17 @@ function ManageMenu() {
             const newMenuItem = await createMenuItem({
                 name: newItem.name,
                 price: parseFloat(newItem.price),
+                description: newItem.description, // Include description
                 category: categoryId,
             });
 
-            // Update the category with the new item
-            setCategories(categories.map(category => 
-                category.id === categoryId 
-                    ? { ...category, items: [...category.items, newMenuItem] } 
+            setCategories(categories.map(category =>
+                category.id === categoryId
+                    ? { ...category, items: [...category.items, newMenuItem] }
                     : category
             ));
 
-            setNewItem({ name: '', price: '' });
+            setNewItem({ name: '', price: '', description: '' });
             setActiveForm('');
         }
     };
@@ -54,10 +53,9 @@ function ManageMenu() {
         if (window.confirm('Are you sure you want to delete this item?')) {
             await deleteMenuItem(itemId);
 
-            // Update categories to remove the deleted item
-            setCategories(categories.map(category => 
-                category.id === categoryId 
-                    ? { ...category, items: category.items.filter(item => item.id !== itemId) } 
+            setCategories(categories.map(category =>
+                category.id === categoryId
+                    ? { ...category, items: category.items.filter(item => item.id !== itemId) }
                     : category
             ));
         }
@@ -91,6 +89,7 @@ function ManageMenu() {
                                 {category.items?.map(item => (
                                     <li key={item.id} className="menu-item">
                                         {item.name} - ${Number(item.price).toFixed(2)}
+                                        <p>{item.description}</p> {/* Display description */}
                                         {isEditing && (
                                             <button
                                                 className="delete-button"
@@ -131,6 +130,11 @@ function ManageMenu() {
                                 placeholder="Price"
                                 value={newItem.price}
                                 onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                            />
+                            <input
+                                placeholder="Description"
+                                value={newItem.description}
+                                onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                             />
                             <div className="category-selection">
                                 <span>Add item to:</span>
