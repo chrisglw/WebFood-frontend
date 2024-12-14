@@ -58,6 +58,7 @@ const NavBar = ({ cartItems, userRole, setUserRole }) => {
                     <>
                         <li><Link to="/manage-menu" onClick={closeMenu}>Manage Menu</Link></li>
                         <li><Link to="/manage-orders" onClick={closeMenu}>Manage Orders</Link></li>
+                        <li><Link to="/sales-report" onClick={closeMenu}>Sales Report</Link></li>
                     </>
                 )}
 

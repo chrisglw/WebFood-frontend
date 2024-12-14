@@ -12,6 +12,7 @@ import ManageMenu from './Pages/ManageMenu/ManageMenu';
 import ManageOrders from './Pages/ManageOrders/ManageOrders';
 import Footer from './Components/Footer/Footer';
 import ProtectedRoute from './Components/ProtectedRoute/ProtectedRoute';
+import SalesReport from './Pages/Report/Report';
 
 function App() {
     const [cartItems, setCartItems] = useState([]);
@@ -62,6 +63,10 @@ function App() {
                                     <ManageOrders orders={orders} setOrders={setOrders} />
                                 </ProtectedRoute>
                             }
+                        />
+                        <Route
+                            path="/sales-report"
+                            element={<ProtectedRoute requiredRole="manager"><SalesReport /></ProtectedRoute>}
                         />
                     </Routes>
                 </div>
