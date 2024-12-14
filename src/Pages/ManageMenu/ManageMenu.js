@@ -181,7 +181,7 @@ function ManageMenu() {
                                 value={newItem.price}
                                 onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
                             />
-                            <textarea
+                            <input
                                 placeholder="Description"
                                 value={newItem.description}
                                 onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
