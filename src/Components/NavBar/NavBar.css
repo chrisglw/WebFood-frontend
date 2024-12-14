@@ -46,16 +46,29 @@
     margin: 0 25px;
 }
 
-.nav-links a {
+/* Style for navigation links (anchor tags and buttons) */
+.nav-links a, 
+.nav-links button {
     text-decoration: none;
     color: #333;
     font-size: 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
 }
 
-.nav-links a:hover {
+.nav-links a:hover,
+.nav-links button:hover {
     color: #c35231;
     border-bottom: 2px solid #c35231;
     transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+/* Reset button styling in the nav bar */
+.nav-links button {
+    outline: none;
 }
 
 .cart {
